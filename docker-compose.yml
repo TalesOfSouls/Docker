@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  tos_web:
+    build:
+      context: .
+      dockerfile: WebDockerfile
+    develop:
+      watch:
+        - action: sync
+          path: ./../website/
+          target: /var/www/html
+          ignore:
+            - website/node_modules
+            - website/composer
+            - .git
+    ports:
+      - "127.0.0.3:80:80"
+      - "127.0.0.3:9003:9003"
+    extra_hosts:
+      host.docker.internal: host-gateway
+    volumes:
+      - ./../Website/:/var/www/html
+    depends_on:
+      - mariadb
+
+  mariadb:
+    image: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: mydatabase
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d
+
+volumes:
+  esdata:
