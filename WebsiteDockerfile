@@ -36,7 +36,7 @@ RUN a2enmod php8.3 && \
 # Expose port 80 for Apache
 EXPOSE 80
 
-COPY data/000-default.conf /etc/apache2/sites-enabled/000-default.conf
+COPY data/001-default.conf /etc/apache2/sites-enabled/000-default.conf
 COPY data/20-xdebug.ini /etc/php/8.3/apache2/conf.d/20-xdebug.ini
 
 RUN echo "ServerName 127.0.0.3" >> /etc/apache2/apache2.conf

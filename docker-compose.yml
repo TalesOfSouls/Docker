@@ -1,18 +1,18 @@
 version: '3.8'
 
 services:
-  tos_web:
+  tos_website:
     build:
       context: .
-      dockerfile: WebDockerfile
+      dockerfile: WebsiteDockerfile
     develop:
       watch:
         - action: sync
-          path: ./../website/
+          path: ./../Website/
           target: /var/www/html
           ignore:
-            - website/node_modules
-            - website/composer
+            - Website/node_modules
+            - Website/composer
             - .git
     ports:
       - "127.0.0.3:80:80"
@@ -21,6 +21,29 @@ services:
       host.docker.internal: host-gateway
     volumes:
       - ./../Website/:/var/www/html
+    depends_on:
+      - mariadb
+
+  tos_backend:
+    build:
+      context: .
+      dockerfile: BackendDockerfile
+    develop:
+      watch:
+        - action: sync
+          path: ./../GameBackend/
+          target: /var/www/html
+          ignore:
+            - GameBackend/node_modules
+            - GameBackend/composer
+            - .git
+    ports:
+      - "127.0.0.4:80:80"
+      - "127.0.0.4:9003:9003"
+    extra_hosts:
+      host.docker.internal: host-gateway
+    volumes:
+      - ./../GameBackend/:/var/www/html
     depends_on:
       - mariadb
 
@@ -35,6 +58,26 @@ services:
       - "3306:3306"
     volumes:
       - ./sql:/docker-entrypoint-initdb.d
+
+  tos_chat_server:
+    build:
+      context: .
+      dockerfile: ChatServerDockerfile
+    develop:
+      watch:
+        - action: sync
+          path: ./../ChatServer/
+          target: /var/chat_server
+          ignore:
+            - .git
+    ports:
+      - "127.0.0.5:12345:12345"
+    extra_hosts:
+      host.docker.internal: host-gateway
+    volumes:
+      - ./../ChatServer/:/var/chat_server
+    depends_on:
+      - mariadb
 
 volumes:
   esdata:
