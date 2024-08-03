@@ -47,6 +47,29 @@ services:
     depends_on:
       - mariadb
 
+  tos_feedback:
+    build:
+      context: .
+      dockerfile: FeedbackDockerfile
+    develop:
+      watch:
+        - action: sync
+          path: ./../CommunityFeedback/
+          target: /var/www/html
+          ignore:
+            - CommunityFeedback/node_modules
+            - CommunityFeedback/composer
+            - .git
+    ports:
+      - "127.0.0.5:80:80"
+      - "127.0.0.5:9003:9003"
+    extra_hosts:
+      host.docker.internal: host-gateway
+    volumes:
+      - ./../CommunityFeedback/:/var/www/html
+    depends_on:
+      - mariadb
+
   mariadb:
     image: mariadb
     environment:
@@ -71,7 +94,7 @@ services:
           ignore:
             - .git
     ports:
-      - "127.0.0.5:12345:12345"
+      - "127.0.0.6:12345:12345"
     extra_hosts:
       host.docker.internal: host-gateway
     volumes:
